@@ -8,10 +8,10 @@ import (
 
 	uuid "github.com/nu7hatch/gouuid"
 
-	"github.com/vsreekanti/aft/config"
-	"github.com/vsreekanti/aft/lib/consistency"
-	"github.com/vsreekanti/aft/lib/storage"
-	pb "github.com/vsreekanti/aft/proto/aft"
+	"github.com/tajshaik24/aft/config"
+	"github.com/tajshaik24/aft/lib/consistency"
+	"github.com/tajshaik24/aft/lib/storage"
+	pb "github.com/tajshaik24/aft/proto/aft"
 )
 
 type AftServer struct {

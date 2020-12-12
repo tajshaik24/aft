@@ -20,7 +20,7 @@ import (
 	"github.com/montanaflynn/stats"
 	"google.golang.org/grpc"
 
-	pb "github.com/vsreekanti/aft/proto/aft"
+	pb "github.com/tajshaik24/aft/proto/aft"
 )
 
 var numRequests = flag.Int("numRequests", 1000, "The total number of requests in the benchmark")
@@ -316,8 +316,8 @@ func benchmarkLocal(
 		for keyId := 0; keyId < keyCount; keyId++ {
 			key := strconv.FormatUint(zipf.Uint64(), 10)
 
-			update := &pb.KeyRequest{Tid: tag.Id}
-			pair := &pb.KeyRequest_KeyPair{Key: key}
+			update := &pb.AftKeyRequest{Tid: tag.Id}
+			pair := &pb.AftKeyRequest_KeyPair{Key: key}
 
 			update.Pairs = append(update.Pairs, pair)
 

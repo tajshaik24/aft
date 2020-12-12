@@ -20,7 +20,7 @@ type AftConfig struct {
 
 func ParseConfig() *AftConfig {
 	home := os.Getenv("GOPATH")
-	confPath := filepath.Join(home, "src", "github.com", "vsreekanti", "aft", "config", "aft-config.yml")
+	confPath := filepath.Join(home, "src", "github.com", "tajshaik24", "aft", "config", "aft-config.yml")
 
 	bts, err := ioutil.ReadFile(confPath)
 	if err != nil {

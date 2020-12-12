@@ -1,2 +1,3 @@
 consistencyType: read-atomic
-storageType: anna 
+storageType: anna
+elbAddress: a00ddb79a9b5e4544b61491066dcec17-60570139.us-west-1.elb.amazonaws.com

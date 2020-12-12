@@ -22,7 +22,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: management-container
-    image: vsreekanti/aft
+    image: tajshaik24/aft
     env:
     - name: ROLE
       value: manager

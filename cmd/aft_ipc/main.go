@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	// "math/rand"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -12,8 +12,8 @@ import (
 	uuid "github.com/nu7hatch/gouuid"
 	zmq "github.com/pebbe/zmq4"
 
-	pb "github.com/vsreekanti/aft/proto/aft"
-	annapb "github.com/vsreekanti/aft/proto/anna"
+	pb "github.com/tajshaik24/aft/proto/aft"
+	annapb "github.com/tajshaik24/aft/proto/anna"
 )
 
 type keyUpdate struct {

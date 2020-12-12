@@ -34,17 +34,11 @@ mkdir -p ~/.aws
 echo -e "[default]\nregion = us-east-1" > ~/.aws/config
 echo -e "[default]\naws_access_key_id = $AWS_ACCESS_KEY_ID\naws_secret_access_key = $AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
 
-# Fetch the most recent version of the code.
-cd $AFT_HOME
-git checkout .
-git fetch -p origin
-git checkout -b brnch origin/$REPO_BRANCH
-cd proto/aft
+cd $AFT_HOME/proto/aft
 protoc -I . aft.proto --go_out=plugins=grpc:.
 cd $AFT_HOME
 
 # Build the most recent version of the code.
-
 if [[ "$ROLE" = "manager" ]] || [[ "$ROLE" = "lb" ]]; then
   mkdir -p /root/.kube
 fi
@@ -53,7 +47,6 @@ fi
 while [[ ! -f $AFT_HOME/config/aft-config.yml ]]; do
   X=1 # Empty command to pass.
 done
-cp $AFT_HOME/config/aft-base.yml $AFT_HOME/config/aft-config.yml
 
 if [[ "$ROLE" != "bench" ]] && [[ "$ROLE" != "lb" ]]; then
   while [[ ! -f replicas.txt ]]; do
@@ -73,30 +66,22 @@ echo "$LST" >> config/aft-config.yml
 
 # Start the process.
 if [[ "$ROLE" = "aft" ]]; then
-  make ipc_server
-  ./cmd/aft_ipc/aft_ipc
+  make server
+  ./cmd/aft/aft
 elif [[ "$ROLE" = "manager" ]]; then
   make gc
-
   REPLICA_IPS=`cat ../replicas.txt | awk 'BEGIN{ORS=","}1'`
   GC_IPS=`cat ../gcs.txt | awk 'BEGIN{ORS=","}1'`
-
   python3 ft-server.py &
-
   ./cmd/gc/gc -replicaList $REPLICA_IPS -gcReplicaList $GC_IPS
 elif [[ "$ROLE" = "bench" ]]; then
   make benchmark
   cd cmd/benchmark
   python3 benchmark_server.py
 elif [[ "$ROLE" = "lb" ]]; then
-  cd $GOPATH/src/k8s.io/klog
-  git checkout v0.4.0
-
-  cd $AFT_HOME
   make lb
   ./cmd/lb/lb
 elif [[ "$ROLE" = "gc" ]]; then
   make gc
-
   ./cmd/gc/server/server
 fi

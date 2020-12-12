@@ -32,7 +32,7 @@ spec:
       hostNetwork: true
       containers:
       - name: lb-container
-        image: vsreekanti/aft
+        image: tajshaik24/aft
         imagePullPolicy: Always
         env: 
         - name: REPO_BRANCH

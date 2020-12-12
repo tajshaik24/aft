@@ -19,9 +19,8 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 7654
-    targetPort: 7654
+  - port: 8000
+    targetPort: 8000
     name: aft-0
   selector:
-    role: aft
-    aftReady: isready
+    role: lb

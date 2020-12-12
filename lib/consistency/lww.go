@@ -3,7 +3,7 @@ package consistency
 import (
 	"sync"
 
-	pb "github.com/vsreekanti/aft/proto/aft"
+	pb "github.com/tajshaik24/aft/proto/aft"
 )
 
 type LWWConsistencyManager struct{}

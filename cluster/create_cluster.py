@@ -57,7 +57,7 @@ def create_cluster(replica_count, gc_count, lb_count, bench_count, cfile,
                               '/root/.kube', 'lb-container')
 
     replica_ips = util.get_node_ips(client, 'role=gc', 'ExternalIP')
-    with open('gcs.txt', 'w') as f:
+    with open('gcs.txt', 'w+') as f:
         for ip in replica_ips:
             f.write(ip + '\n')
 
@@ -69,7 +69,7 @@ def create_cluster(replica_count, gc_count, lb_count, bench_count, cfile,
     util.get_pod_ips(client, 'role=aft')
 
     replica_ips = util.get_node_ips(client, 'role=aft', 'ExternalIP')
-    with open('replicas.txt', 'w') as f:
+    with open('replicas.txt', 'w+') as f:
         for ip in replica_ips:
             f.write(ip + '\n')
 
@@ -77,13 +77,13 @@ def create_cluster(replica_count, gc_count, lb_count, bench_count, cfile,
     management_pname = management_spec['metadata']['name']
     management_cname = management_spec['spec']['containers'][0]['name']
     util.copy_file_to_pod(client, 'aft-config.yml', management_pname,
-                          '/go/src/github.com/vsreekanti/aft/config',
+                          '/go/src/github.com/tajshaik24/aft/config',
                           management_cname)
     util.copy_file_to_pod(client, 'replicas.txt', management_pname,
-                          '/go/src/github.com/vsreekanti/aft',
+                          '/go/src/github.com/tajshaik24/aft',
                           management_cname)
     util.copy_file_to_pod(client, 'gcs.txt', management_pname,
-                          '/go/src/github.com/vsreekanti/aft',
+                          '/go/src/github.com/tajshaik24/aft',
                           management_cname)
     util.copy_file_to_pod(client, kubecfg, management_pname, '/root/.kube/',
                           management_cname)
@@ -96,7 +96,7 @@ def create_cluster(replica_count, gc_count, lb_count, bench_count, cfile,
     aft_pod_list = list(map(lambda pod: pod.metadata.name, aft_pod_list))
     for pname in aft_pod_list:
         util.copy_file_to_pod(client, 'replicas.txt', pname,
-                              '/go/src/github.com/vsreekanti/aft',
+                              '/go/src/github.com/tajshaik24/aft',
                               'aft-container')
 
     gc_pod_list = client.list_namespaced_pod(namespace=util.NAMESPACE,
@@ -104,13 +104,17 @@ def create_cluster(replica_count, gc_count, lb_count, bench_count, cfile,
     gc_pod_list = list(map(lambda pod: pod.metadata.name, gc_pod_list))
     for pname in gc_pod_list:
         util.copy_file_to_pod(client, 'replicas.txt', pname,
-                              '/go/src/github.com/vsreekanti/aft',
+                              '/go/src/github.com/tajshaik24/aft',
                               'gc-container')
     os.system('rm replicas.txt')
 
     print('Adding %d benchmark nodes...' % (bench_count))
     add_nodes(client, apps_client, cfile, ['benchmark'], [bench_count],
               management_ip, aws_key_id, aws_key, True, prefix)
+    benchmark_ips = util.get_node_ips(client, 'role=benchmark', 'ExternalIP')
+    with open('../cmd/benchmark/benchmarks.txt', 'w+') as f:
+        for ip in benchmark_ips:
+            f.write(ip + '\n')
 
     print('Finished creating all pods...')
 
@@ -119,6 +123,8 @@ def create_cluster(replica_count, gc_count, lb_count, bench_count, cfile,
     client.create_namespaced_service(namespace=util.NAMESPACE,
                                      body=service_spec)
 
+    print("The Aft LB Endpoint: " + util.get_service_address(client, "aft-service"))
+
     sg_name = 'nodes.' + cluster_name
     sg = ec2_client.describe_security_groups(
           Filters=[{'Name': 'group-name',
@@ -126,27 +132,13 @@ def create_cluster(replica_count, gc_count, lb_count, bench_count, cfile,
 
     print('Authorizing ports for Aft replicas...')
     permission = [{
-        'FromPort': 7654,
+        'FromPort': 0,
         'IpProtocol': 'tcp',
-        'ToPort': 7656,
+        'ToPort': 65535,
         'IpRanges': [{
             'CidrIp': '0.0.0.0/0'
         }]
-    }, {
-        'FromPort': 7777,
-        'IpProtocol': 'tcp',
-        'ToPort': 7782,
-        'IpRanges': [{
-            'CidrIp': '0.0.0.0/0'
-        }]
-    },{
-        'FromPort': 8000,
-        'IpProtocol': 'tcp',
-        'ToPort': 8003,
-        'IpRanges': [{
-            'CidrIp': '0.0.0.0/0'
-        }]
-    } ]
+    }]
 
     ec2_client.authorize_security_group_ingress(GroupId=sg['GroupId'],
                                                 IpPermissions=permission)

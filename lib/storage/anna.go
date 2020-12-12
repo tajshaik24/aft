@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	pb "github.com/vsreekanti/aft/proto/aft"
+	pb "github.com/tajshaik24/aft/proto/aft"
 )
 
 const (
@@ -89,9 +89,6 @@ func (anna *AnnaStorageManager) Get(key string) (*pb.KeyValuePair, error) {
 	client := anna.getClient()
 	defer anna.releaseClient(client)
 	bts, err := client.Get(key)
-	for err != nil && strings.Contains(err, "KEY_DNE") {
-		bts, err := client.Get(key)
-	}
 
 	if err != nil {
 		return result, err

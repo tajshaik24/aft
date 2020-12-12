@@ -135,8 +135,8 @@ def setup_pod(client, internal_ip):
     with open('replicas.txt', 'w') as f:
         for ip in ips:
             f.write(ip + '\n')
-    os.system('kubectl cp replicas.txt %s:/go/src/github.com/vsreekanti/aft' % pname)
-    os.system('kubectl cp ../config/aft-config.yml %s:/go/src/github.com/vsreekanti/aft/config' % pname)
+    os.system('kubectl cp replicas.txt %s:/go/src/github.com/tajshaik24/aft' % pname)
+    os.system('kubectl cp ../config/aft-config.yml %s:/go/src/github.com/tajshaik24/aft/config' % pname)
     os.system('rm replicas.txt')
 
     time.sleep(50)

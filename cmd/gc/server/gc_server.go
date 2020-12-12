@@ -9,10 +9,10 @@ import (
 	"github.com/golang/protobuf/proto"
 	zmq "github.com/pebbe/zmq4"
 
-	"github.com/vsreekanti/aft/config"
-	"github.com/vsreekanti/aft/lib/consistency"
-	"github.com/vsreekanti/aft/lib/storage"
-	pb "github.com/vsreekanti/aft/proto/aft"
+	"github.com/tajshaik24/aft/lib/consistency"
+	"github.com/tajshaik24/aft/lib/storage"
+	pb "github.com/tajshaik24/aft/proto/aft"
+	"github.com/tajshaik24/aft/config"
 )
 
 const (

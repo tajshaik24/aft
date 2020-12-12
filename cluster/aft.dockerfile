@@ -14,11 +14,14 @@
 
 FROM ubuntu:18.04
 
-MAINTAINER Vikram Sreekanti <vsreekanti@gmail.com> version: 0.1
+MAINTAINER Vikram Sreekanti <vsreekanti@gmail.com> version: 0.2
 
 USER root
+
+# Setup envrionment variables
 ENV GOPATH /go
-ENV AFT_HOME $GOPATH/src/github.com/vsreekanti/aft
+ENV PATH $PATH:$GOPATH/bin
+ENV AFT_HOME $GOPATH/src/github.com/tajshaik24/aft
 
 # Setup the go dir.
 RUN mkdir $GOPATH
@@ -47,33 +50,25 @@ RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.10.0/p
 RUN unzip protoc-3.10.0-linux-x86_64.zip -d /usr/local
 
 # Clone the aft code.
-RUN mkdir -p $GOPATH/src/github.com/vsreekanti
-WORKDIR $AFT_HOME/..
-RUN git clone https://github.com/vsreekanti/aft
+RUN mkdir -p $GOPATH/src/github.com/tajshaik24
+WORKDIR $GOPATH/src/github.com/tajshaik24
+RUN git clone https://github.com/tajshaik24/aft
 WORKDIR $AFT_HOME
 
 # Install required Go dependencies.
 RUN go get -u google.golang.org/grpc
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
-ENV PATH $PATH:$GOPATH/bin
-RUN which protoc-gen-go
+RUN go get -d ./...
+RUN cd $GOPATH/src/github.com/googleapis/gnostic && git checkout v0.4.0 && git pull origin master
+RUN cd $GOPATH/src/k8s.io/klog && git checkout v0.4.0 && git pull origin master
 
-# Fetch the most recent version of the code and install dependencies.
+# Generate gRPC files
 WORKDIR $AFT_HOME/proto/aft
 RUN protoc -I . aft.proto --go_out=plugins=grpc:.
 WORKDIR $AFT_HOME
-# RUN go get -u github.com/googleapis/gnostic 
-RUN go get -d ./...
-RUN cd $GOPATH/src/github.com/googleapis/gnostic && git checkout v0.4.0
-# RUN go get -u -d k8s.io/klog
-RUN cd $GOPATH/src/k8s.io/klog && git checkout v0.4.0
 
 # Install Python dependencies.
 RUN pip3 install zmq kubernetes boto3
 
-WORKDIR $AFT_HOME
-RUN cd proto/aft && protoc -I . aft.proto --go_out=plugins=grpc:.
-WORKDIR /
-COPY start-aft.sh /start-aft.sh
-
+WORKDIR $AFT_HOME/cluster
 CMD bash start-aft.sh

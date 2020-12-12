@@ -9,7 +9,7 @@ import (
 	awsdynamo "github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/golang/protobuf/proto"
 
-	pb "github.com/vsreekanti/aft/proto/aft"
+	pb "github.com/tajshaik24/aft/proto/aft"
 )
 
 type DynamoStorageManager struct {

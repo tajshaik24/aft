@@ -8,10 +8,10 @@ import (
 
 	uuid "github.com/nu7hatch/gouuid"
 
-	"github.com/vsreekanti/aft/config"
-	"github.com/vsreekanti/aft/lib/consistency"
-	"github.com/vsreekanti/aft/lib/storage"
-	pb "github.com/vsreekanti/aft/proto/aft"
+	"github.com/tajshaik24/aft/config"
+	"github.com/tajshaik24/aft/lib/consistency"
+	"github.com/tajshaik24/aft/lib/storage"
+	pb "github.com/tajshaik24/aft/proto/aft"
 )
 
 type AftServer struct {
@@ -53,7 +53,6 @@ func NewAftServer() (*AftServer, *config.AftConfig) {
 		os.Exit(3)
 	}
 
-	// TODO: These paths should be in the conf.
 	var storageManager storage.StorageManager
 	switch conf.StorageType {
 	case "s3":
@@ -69,7 +68,7 @@ func NewAftServer() (*AftServer, *config.AftConfig) {
 		os.Exit(3)
 	}
 
-	uid, err := uuid.NewV4()
+	uid, err := uuid.NewV4();
 	if err != nil {
 		log.Fatal("Unexpected error while generating UUID: %v", err)
 		os.Exit(1)

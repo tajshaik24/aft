@@ -32,7 +32,7 @@ spec:
       hostNetwork: True
       containers:
       - name: benchmark-1
-        image: vsreekanti/aft
+        image: tajshaik24/aft
         env: 
         - name: REPLICA_IPS
           value: REPLICA_IPS_DUMMY

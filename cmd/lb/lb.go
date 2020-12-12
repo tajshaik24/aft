@@ -8,7 +8,7 @@ import (
 	"time"
 
 	zmq "github.com/pebbe/zmq4"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	v1meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -104,9 +104,7 @@ func getAddresses(client *kubernetes.Clientset) ([]string, error) {
 
 	addresses := make([]string, len(nodes.Items))
 	for index, node := range nodes.Items {
-		if checkNodeReady(client, getNodeAddress(node.Status.Addresses, v1.NodeHostName)) {
-			addresses[index] = getNodeAddress(node.Status.Addresses, v1.NodeExternalIP)
-		}
+		addresses[index] = getNodeAddress(node.Status.Addresses, v1.NodeExternalIP)
 	}
 
 	return addresses, nil
@@ -120,17 +118,4 @@ func getNodeAddress(addresses []v1.NodeAddress, tp v1.NodeAddressType) string {
 	}
 
 	return ""
-}
-
-func checkNodeReady(client *kubernetes.Clientset, nodeName string) bool {
-	pods, err := client.CoreV1().Pods("default").List(context.TODO(), v1meta.ListOptions{LabelSelector: "role=aft", FieldSelector: fmt.Sprintf("spec.nodeName=%s", nodeName)})
-	if err != nil || len(pods.Items) == 0 {
-		fmt.Println("Unexpected error while checking pod status:\n", err)
-		return false
-	}
-
-	pod := pods.Items[0]
-	label, ok := pod.Labels["aftReady"]
-
-	return ok && label == "isready"
 }
